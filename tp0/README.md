@@ -49,6 +49,7 @@ provient la valeur de point d'entrée à `0x302010` au lieu de `0x300000`.**
 
 Note : il est possible de s'aider également de la page wiki sur les options de [linkage](https://github.com/agantet/secos-ng/wiki/Tooling#options-de-linkage).
 
+.mbh occupe 0x0c Octets après l'adresse 0x300000, .stack s'aligne sur 16 Octets donc commence à 0X300010 et occupe les 0x2000 Octets suivants
 
 ## Cartographie mémoire au démarrage
 
@@ -103,6 +104,10 @@ debug("after: 0x%x\n", *ptr_in_reserved_mem);                // check
 ```
 Le comportement observé semble-t-il cohérent ?
 
+Oui, la mémoire est écrite dans la zone libre mais pas dans la zone réservée
+
 **Q4 : Compléter la fonction `tp()` de [tp.c](./tp.c) pour essayer de lire ou
   écrire à une adresse en dehors de la mémoire physique disponible (128 MB).
   Que se passe-t-il ? Comment pourrait-on l'expliquer ?**
+
+La mémoire est bien lue/écrite quand on tombe sur une zone libre, on remarque que quand on dépasse la mémoire physique disponible, une opération de modulo est effectuée sur l'adresse (omission des bits >= 128MB)

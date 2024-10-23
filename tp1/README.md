@@ -39,6 +39,10 @@ point d'entrée du noyau.
   de base de la GDT en cours d'utilisation ainsi que sa "limite" (type utile :
   `gdt_reg_t`).**
 
+sgdt récupère la valeur du gdtr et la stocke à l'adresse mémoire en argument
+
+macro pour récupérer la valeur : get_gdtr ligne 226
+
 **Q2\* :  Dans [`tp.c`](./tp.c), un exemple d'implémentation d'affichage du
   contenu de table de type GDT est fournie (fonction `print_gdt_content`).
   L'utiliser pour afficher le contenu de la GDT courante.**
@@ -52,9 +56,12 @@ point d'entrée du noyau.
 * Le segment de pile (sélecteur ss)
 * D'autres segments (sélecteurs autres : es, fs, gs, etc.)
 
+Descripteurs 1 et 2 en cours d'utilisation
+
 **Q4 : Que constate-t-on ? Que dire de la ségrégation mémoire mise en place
   par défaut par GRUB avec une telle configuration ?**
 
+1 descripteur de code, Un descripteur de data, les deux s'appliquent sur l'ensemble de la mémoire donc on peut dire que GRUP et en mode "flat"
 
 ## Une première reconfiguration de la GDT : en mode "flat"
 

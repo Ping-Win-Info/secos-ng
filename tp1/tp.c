@@ -35,7 +35,89 @@ void print_gdt_content(gdt_reg_t gdtr_ptr) {
     }
 }
 
+void print_seg_sel_content(seg_sel_t seg_sel) {
+    debug("raw value : %d\t", seg_sel.raw);
+    debug("rpl : %d\t", seg_sel.rpl);
+    debug("ti : %d\t", seg_sel.ti);
+    debug("index : %d\n", seg_sel.index);
+}
+
 
 void tp() {
-	// TODO
+	// Q2
+    gdt_reg_t gdtr;
+    get_gdtr(gdtr);
+    print_gdt_content(gdtr);
+
+    // Q3
+    seg_sel_t cs,ds,ss,es,fs,gs;
+    ss.raw = get_ss();
+    ds.raw = get_ds();
+    es.raw = get_es();
+    fs.raw = get_fs();
+    gs.raw = get_gs();
+    cs.raw = get_seg_sel(cs);
+    print_seg_sel_content(cs);
+    print_seg_sel_content(ds);
+    print_seg_sel_content(ss);
+    print_seg_sel_content(es);
+    print_seg_sel_content(fs);
+    print_seg_sel_content(gs);
+
+    // Q5 base address : Ox0040
+    seg_desc_t flat_gdt[3];
+
+    seg_desc_t null, data, code;
+    null.raw = 0ULL;
+
+    code.limit_1=0xffff;
+    code.base_1=0;
+    code.base_2=0;
+    code.type=0xb; // could be 0xa too, doesn't really matter in flat mode
+    code.s=1;
+    code.dpl=0;
+    code.p=1;
+    code.limit_2=0xf;
+    code.avl=1;
+    code.l=0;
+    code.d=1;
+    code.g=1;
+    code.base_3=0;
+
+    data.limit_1=0xffff;
+    data.base_1=0;
+    data.base_2=0;
+    data.type=0x3; // could be 0x2 too
+    data.s=1;
+    data.dpl=0;
+    data.p=1;
+    data.limit_2=0xf;
+    data.avl=1;
+    data.l=0;
+    data.d=1;
+    data.g=1;
+    data.base_3=0;
+
+    flat_gdt[0] = null;
+    flat_gdt[1] = code;
+    flat_gdt[2] = data;
+
+
+    // Q6
+    gdt_reg_t flat_gdtr; 
+    flat_gdtr.desc = flat_gdt;
+    flat_gdtr.limit = sizeof(flat_gdt) - 1;
+    
+    set_gdtr(flat_gdtr);
+    set_cs(gdt_krn_seg_sel(1));
+    set_ds(gdt_krn_seg_sel(2));
+
+    // Q7
+    get_gdtr(gdtr);
+    print_gdt_content(gdtr);
+
+    //Q8
+    //set_cs(gdt_krn_seg_sel(2));
+    //set_ds(gdt_krn_seg_sel(1));
+
 }

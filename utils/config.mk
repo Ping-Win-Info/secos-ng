@@ -48,13 +48,13 @@ LDSCRIPT   := ../utils/linker.lds
 TARGET     := kernel.elf
 
 # Qemu options
-QEMU := $(shell which qemu-system-i386)
-#QEMU := $(shell which kvm)
+QEMU := $(shell which qemu-system-i386) 
+#QEMU := $(shell which kvm) # for tp1
 QFDA := -drive media=disk,format=raw,if=floppy,file=../utils/grub.floppy
 QHDD := -drive media=disk,format=raw,if=ide,index=0,file=fat:rw:.
 QSRL := -serial mon:stdio
 QDBG := -d int,pcall,cpu_reset,unimp,guest_errors
-QOPT := $(QFDA) $(QHDD) $(QSRL) -boot a -nographic
+QOPT := $(QFDA) $(QHDD) $(QSRL) $(QDBG) -boot a -nographic
 
 ifneq ($(findstring "kvm",$(QEMU)),)
 QOPT += -cpu host

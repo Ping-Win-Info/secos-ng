@@ -90,6 +90,8 @@ qu'elle puisse gérer l'exception #BP. Le but est de ne pas modifier
   impact sur la pile ? Est-ce cohérent avec ce qui était sur la pile au
   moment de l'arrivée d'une interruption ?**
 
+Normalement handlers uses iret instead of ret which pops more stuff -> do in asm
+
 ### Deuxième essai : via l'assembleur inline
 
 L'idée est de réécrire `bp_handler` en assembleur inline pour éviter l'écueil
@@ -104,6 +106,8 @@ de l'essai précédent.
 
 **Quelle signification cette valeur a-t-elle ? S'aider à nouveau de `objdump -D`
 pour comparer cette valeur à une adresse de votre noyau.**
+
+il s'agit de l'adresse de retour (future valeur de eip) après avoir executé le handler
 
 **Q8\* : Qu'est-ce qui n'est pas stocké par le CPU à l'arrivée d'une
   interruption et qu'il est impératif de sauvegarder avant tout traitement de

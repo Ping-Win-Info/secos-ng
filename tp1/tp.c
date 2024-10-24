@@ -1,6 +1,7 @@
 /* GPLv2 (c) Airbus */
 #include <debug.h>
 #include <segmem.h>
+#include <string.h>
 
 void userland() {
    asm volatile ("mov %eax, %cr0");
@@ -65,7 +66,7 @@ void tp() {
     print_seg_sel_content(gs);
 
     // Q5 base address : Ox0040
-    seg_desc_t flat_gdt[3];
+    seg_desc_t flat_gdt[6];
 
     seg_desc_t null, data, code;
     null.raw = 0ULL;
@@ -119,5 +120,47 @@ void tp() {
     //Q8
     //set_cs(gdt_krn_seg_sel(2));
     //set_ds(gdt_krn_seg_sel(1));
+
+    //Q9
+    char  src[64];
+    char *dst = 0;
+    memset(src, 0xff, 64);
+    _memcpy8(dst, src, 32);
+    seg_desc_t es_desc;
+
+    es_desc.limit_1=0x0020; // 32 B
+    es_desc.base_1=0x0000;
+    es_desc.base_2=0x60;
+    es_desc.type=0x3; // could be 0x2 too
+    es_desc.s=1;
+    es_desc.dpl=0;
+    es_desc.p=1;
+    es_desc.limit_2=0x0;
+    es_desc.avl=1;
+    es_desc.l=0;
+    es_desc.d=1;
+    es_desc.g=0; // size in Bytes
+    es_desc.base_3=0x00;
+
+    flat_gdt[3] = es_desc;
+    debug("GDT after adding 32B segment : \n");
+    print_gdt_content(gdtr);
+
+    // Q10
+    seg_sel_t es_sel;
+    es_sel.index = 3;
+    es_sel.ti = 0;
+    es_sel.rpl = 0;
+    set_es(es_sel);
+    _memcpy8(dst, src, 32);
+
+    // Q11
+    _memcpy8(dst, src, 64);
+
+    // Q12
+    code.dpl = 3;
+    data.dpl = 3;
+    flat_gdt[4] = code;
+    flat_gdt[5] = data;
 
 }
